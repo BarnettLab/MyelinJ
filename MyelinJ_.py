@@ -81,8 +81,6 @@ import MyelinJanalysis
 import basicfunctions
 import config
 
-settings = ""
-
 # select file containing images for analysis
 imagefolder = IJ.getDirectory("Choose a Directory")
 basicfunctions.closeallimages()  # close any images already open
