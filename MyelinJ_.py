@@ -69,12 +69,12 @@ cwd = os.getcwd()
 # location for username CSV (which  should be in Fiji's plugin file) based
 # on the operating system bein used
 if "Windows" in OS:
-    cwdR = cwd+"\\plugins\\MyelinJ\\MyelinJstats.R"
+    cwdR = cwd+"\\plugins\\MyelinJ-master\\MyelinJstats.R"
     cwdR = '"'+cwdR+'"'
-    cwd = cwd+"\\plugins\\MyelinJ\\"
+    cwd = cwd+"\\plugins\\MyelinJ-master\\"
 elif "Mac" in OS:
-    cwdR = cwd + "/plugins/MyelinJ/MyelinJstats.R"
-    cwd = cwd+"/plugins/MyelinJ/"
+    cwdR = cwd + "/plugins/MyelinJ-master/MyelinJstats.R"
+    cwd = cwd+"/plugins/MyelinJ-master/"
 sys.path.append(cwd)
 
 import MyelinJanalysis
