@@ -208,6 +208,7 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
             file path to MyelinJstats.R
         """
         # read settings from the user name CSV
+        bg = False
         readsettings = []
         imagenames = []
         neuritedensity = []
@@ -264,17 +265,17 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
                     conv.convertToGray8()
                     
                     # thresholding to select cell bodies
-                    if readsettings[13] == "True":
-                        green2 = green.duplicate()
-                        if (readsettings[0] != "0") or (readsettings[1] != "255"):
-                            IJ.setAutoThreshold(green2, "Default")
-                            IJ.setRawThreshold(green2, int(readsettings[0]), int(readsettings[1]), None)
-                            Prefs.blackBackground = True
-                            IJ.run(green2, "Convert to Mask", "")
-                            IJ.run(green2, "Invert LUT", "")
+                    green2 = green.duplicate()
+                    if (readsettings[0] != "0") or (readsettings[1] != "0"):
+                        bg = True    
+                        IJ.setAutoThreshold(green2, readsettings[2])
+                        IJ.setRawThreshold(green2, int(readsettings[0]), int(readsettings[1]), None)
+                        Prefs.blackBackground = True
+                        IJ.run(green2, "Convert to Mask", "")
+                        IJ.run(green2, "Invert LUT", "")
                         if readsettings[7] != "0":
-                            IJ.run(green2, "Make Binary", "")
-                            IJ.run(green2, "Remove Outliers...", "radius="+readsettings[7]+" threshold=50 which=Bright")
+                               IJ.run(green2, "Make Binary", "")
+                               IJ.run(green2, "Remove Outliers...", "radius="+readsettings[7]+" threshold=50 which=Bright")
                     
                     # CLAHE and background subtraction
                     if readsettings[8] == "True":
@@ -296,7 +297,7 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
                     IJ.run(green, "Convert to Mask", "")
                     
                     # remove cell bodies
-                    if readsettings[13] == "True":
+                    if bg is "True":
                         green = ImageCalculator().run("Subtract create", green, green2)
                     
                     # run grey scale morphology filter from MorpholibJ
