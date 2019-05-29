@@ -330,13 +330,16 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
                     IJ.saveAs(red, "Jpeg", settings2+name+"neurites")
                     # get number of neurite pixels
                     
-                    statsneurite = red.getStatistics()
-                    neuritedensity.append(statsneurite.histogram[255])
+                    # get number of neurite pixels
+                    statsneurite = red.getProcessor()
+                    statsneurite = statsneurite.getHistogram()
+                    neuritedensity.append(statsneurite[255])
                     IJ.saveAs(green, "Jpeg", settings2+name+"myelinFinal")
                     
                     # get number of myelin pixels
-                    statsmyelin = green.getStatistics()
-                    myelinoverlay.append(statsmyelin.histogram[255])
+                    statsmyelin = green.getProcessor()
+                    statsmyelin = statsmyelin.getHistogram()
+                    myelinoverlay.append(statsmyelin[255])
                     closeallimages()
                     
                     # get pixel total of image
