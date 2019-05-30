@@ -297,7 +297,7 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
                     IJ.run(green, "Convert to Mask", "")
                     
                     # remove cell bodies
-                    if bg is "True":
+                    if bg is True:
                         green = ImageCalculator().run("Subtract create", green, green2)
                     
                     # run grey scale morphology filter from MorpholibJ
@@ -343,8 +343,8 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
                     closeallimages()
                     
                     # get pixel total of image
-                    whitepixels = (statsneurite.histogram[0])
-                    blackpixels = (statsneurite.histogram[255])
+                    whitepixels = (statsneurite[0])
+                    blackpixels = (statsneurite[255])
                     
             totalpixels = whitepixels + blackpixels
             totalpixels = [totalpixels]*len(neuritedensity)
