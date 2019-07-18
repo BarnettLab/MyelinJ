@@ -254,8 +254,9 @@ def frangifilter(self):
             ImageWindow.setNextLocation(int(IJ.getScreenSize().width * 1/3),
                                             int(IJ.getScreenSize().height * 1/14))
             self.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR))
-            IJ.run("Frangi Vesselness (imglib, experimental)",
-                    "number=1 minimum=0.454009 maximum=0.454009")
+            pixelwidth = str(green.getCalibration().pixelWidth)
+            IJ.run(green,"Frangi Vesselness (imglib, experimental)",
+                    "number=1 minimum="+pixelwidth+" maximum="+pixelwidth)
             g = IJ.getImage()
             g.setTitle("original + background subtraction + vesselness")
             g = g.duplicate()
@@ -273,7 +274,7 @@ def frangifilter(self):
             ImageWindow.setNextLocation(int(IJ.getScreenSize().width * 1/3),
                                             int(IJ.getScreenSize().height * 1/14))
             if config.greyscaleMinVal != "0" or "":
-                IJ.run(green, "Gray Scale Attribute Filtering", "operation=Opening attribute=[Box Diagonal] minimum="+config.greyscale.MinVal+" connectivity=4")
+                IJ.run(green, "Gray Scale Attribute Filtering", "operation=Opening attribute=[Box Diagonal] minimum="+config.greyscaleMinVal+" connectivity=4")
                 green = IJ.getImage()
                 green.setTitle("original + background subtraction + vesselness + cell body subtraction")
             self.setCursor(Cursor.getDefaultCursor())
@@ -950,11 +951,11 @@ class Dialog4(JFrame):
         self.rollingballcb.setBounds(60, 40, 250, 20)
         panel.add(self.rollingballcb)
 
-        self.neurireSubcb = JCheckBox("Subtract background (using neurites)?", 
+        self.neuriteSubcb = JCheckBox("Subtract background (using neurites)?", 
                                       False, actionPerformed=self.onSubtractneurites)
-        self.neurireSubcb.setFocusable(False)
-        self.neurireSubcb.setBounds(60, 60, 250, 20)
-        panel.add(self.neurireSubcb)
+        self.neuriteSubcb.setFocusable(False)
+        self.neuriteSubcb.setBounds(60, 60, 250, 20)
+        panel.add(self.neuriteSubcb)
 
         Title4 = JTextArea("Remove back ground pixels")
         Title4.setBounds(30, 80, 320, 20)
@@ -1147,7 +1148,7 @@ class Dialog4(JFrame):
            state of rolling ball background subtraction checkbox
            (rollingballcb)
         backgroundsubNeurite : bool
-           state of neurite background subtraction checkbox (neurireSubcb)
+           state of neurite background subtraction checkbox (neuriteSubcb)
         Returns (global in config.py)
         -------
         mCLAHE: bool
@@ -1182,7 +1183,7 @@ class Dialog4(JFrame):
         Parameters
         ----------
         backgroundsubNeurite : bool
-           state of neurite background subtraction checkbox (neurireSubcb)
+           state of neurite background subtraction checkbox (neuriteSubcb)
         mCLAHE: bool
              state of CLAHE checkbox (bCLAHE)
         Returns (global in config.py)
@@ -1211,7 +1212,7 @@ class Dialog4(JFrame):
             self.setCursor(Cursor.getDefaultCursor())
         else:
             IJ.showMessage("Error: only one background subtraction can be selected")
-            self.bgcb.setSelected(False)
+            self.rollingballcb.setSelected(False)
 
     def onSubtractneurites(self, cb1):
         """ neurite background subtraction
@@ -1219,7 +1220,7 @@ class Dialog4(JFrame):
         Parameters
         ----------
          backgroundsubRolling : bool
-           state of neurite background subtraction checkbox (neurireSubcb)
+           state of neurite background subtraction checkbox (neuriteSubcb)
         mCLAHE: bool
              state of CLAHE checkbox (bCLAHE)
         Returns (global in config.py)
@@ -1246,7 +1247,7 @@ class Dialog4(JFrame):
             self.setCursor(Cursor.getDefaultCursor())
         else:
             IJ.showMessage("Error: only one background subtraction can be selected")
-            self.bgcb.setSelected(False)
+            self.neuriteSubcb.setSelected(False)
 
     def onSubtractpixels(self, e):
          """ Math: pixel subtraction
@@ -1284,7 +1285,7 @@ class Dialog4(JFrame):
             self.setOutliers.setEditable(True)
             self.setpixels2.setEditable(False)
             self.rollingballcb.setEnabled(False)
-            self.neurireSubcb.setEnabled(False)
+            self.neuriteSubcb.setEnabled(False)
             self.bCLAHE.setEnabled(False)
             self.tMin.setEditable(True)
             self.tMax.setEditable(True)
@@ -1298,7 +1299,7 @@ class Dialog4(JFrame):
         else:
             self.setOutliers.setEditable(False)
             self.rollingballcb.setEnabled(True)
-            self.neurireSubcb.setEnabled(True)
+            self.neuriteSubcb.setEnabled(True)
             self.bCLAHE.setEnabled(True)
             self.setpixels2.setEditable(True)
             self.tMin.setEditable(False)
@@ -1453,7 +1454,7 @@ class Dialog4(JFrame):
         """
         Allow user to open an image and select as current image so that it
         can used to optimise analysis settings. This must be a .tif
-        composite of myelin and neurires channels. The image will be split
+        composite of myelin and neurites channels. The image will be split
         and only the myelin channel displayed.
         """
         global userimagename
@@ -1489,8 +1490,8 @@ class Dialog4(JFrame):
         self.cellbodycb.setSelected(False)
         self.rollingballcb.setEnabled(True)
         self.rollingballcb.setSelected(False)
-        self.neurireSubcb.setEnabled(True)
-        self.neurireSubcb.setSelected(False)
+        self.neuriteSubcb.setEnabled(True)
+        self.neuriteSubcb.setSelected(False)
         self.bCLAHE.setEnabled(True)
         self.bCLAHE.setSelected(False)
         self.setpixels2.setEditable(True)
@@ -1565,7 +1566,8 @@ class Dialog5(JFrame):
               getimage()
               red.show()
               IJ.run(red, "Normalize Local Contrast", "block_radius_x=40 block_radius_y=40 standard_deviations="+config.contrast+" center stretch")
-              IJ.run(red, "Auto Threshold", "method=default white")
+              Prefs.blackBackground = True
+              IJ.run(red, "Make Binary", "")
               IJ.run(red, "Invert LUT", "")
 
         Title = JTextArea("Normalise local contrast:")
@@ -1707,7 +1709,7 @@ class Dialog5(JFrame):
         """
         Allow user to open an image and select as current image so that it
         can used to optimise analysis settings. This must be a .tif
-        composite of myelin and neurires channels. The image will be split
+        composite of myelin and neurites channels. The image will be split
         and only the myelin channel displayed.
         """
         global userimagename
@@ -1956,7 +1958,7 @@ class Dialog6(JFrame):
         """
         Allow user to open an image and select as current image so that it
         can used to optimise analysis settings. This must be a .tif
-        composite of myelin and neurires channels. The image will be split
+        composite of myelin and neurites channels. The image will be split
         and only the myelin channel displayed.
         """
         global userimagename
