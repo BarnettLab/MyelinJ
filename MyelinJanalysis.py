@@ -275,7 +275,7 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
                         IJ.run(green2, "Invert LUT", "")
                         if readsettings[7] != "0":
                                IJ.run(green2, "Make Binary", "")
-                               IJ.run(green2, "Remove Outliers...", "radius="+readsettings[7]+" threshold=50 which=Bright")
+                               IJ.run(green2, "Remove Outliers...", "radius="+readsettings[7]+" threshold=50 which=Dark")
                     
                     # CLAHE and background subtraction
                     if readsettings[8] == "True":
@@ -283,12 +283,15 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
                     if readsettings[9] == "True":
                         calc = ImageCalculator()
                         green = calc.run("Subtract create", green, red)
-                        IJ.run(green, "Subtract...", "value="+readsettings[10])
                     elif readsettings[6] == "True":
                         IJ.run(green, "Subtract Background...", "rolling=50")
-                    
+                    if readsettings[10] != "0":
+                    	IJ.run(green, "Subtract...", "value="+readsettings[10])
+                      
                     # run frangi vesselness
-                    IJ.run(green, "Frangi Vesselness (imglib, experimental)", "number=1 minimum=0.454009 maximum=0.454009")
+                    pixelwidth = str(green.getCalibration().pixelWidth)
+                    IJ.run(green,"Frangi Vesselness (imglib, experimental)",
+                          "number=1 minimum="+pixelwidth+" maximum="+pixelwidth)
                     green = IJ.getImage()
                     
                     # convert frangi vesselness image to 8bit grey scale
