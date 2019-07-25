@@ -274,7 +274,7 @@ def frangifilter(self):
             ImageWindow.setNextLocation(int(IJ.getScreenSize().width * 1/3),
                                             int(IJ.getScreenSize().height * 1/14))
             if config.greyscaleMinVal != "0" or "":
-                IJ.run(green, "Gray Scale Attribute Filtering", "operation=Opening attribute=[Box Diagonal] minimum="+config.greyscaleMinVal+" connectivity=4")
+                IJ.run("Gray Scale Attribute Filtering", "operation=Opening attribute=[Box Diagonal] minimum="+config.greyscaleMinVal+" connectivity=4")
                 green = IJ.getImage()
                 green.setTitle("original + background subtraction + vesselness + cell body subtraction")
             self.setCursor(Cursor.getDefaultCursor())
