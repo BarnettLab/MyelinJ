@@ -322,6 +322,7 @@ def analyse(cwd, user, imagefolder, stats, experiments, multi, Rloc2, subfoldern
                         IJ.setAutoThreshold(red, readsettings[16])
                         IJ.setRawThreshold(red, int(readsettings[17]), int(readsettings[18]), None)
                         IJ.run(red, "Convert to Mask", "")
+                        IJ.run(red, "Invert LUT", "")
                     else:
                         # dense neurite image analysis
                         IJ.run(red, "Normalize Local Contrast", "block_radius_x=40 block_radius_y=40 standard_deviations="+readsettings[12]+" center stretch")
